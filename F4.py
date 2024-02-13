@@ -1,6 +1,7 @@
 import MDAnalysis as mda
 import matplotlib.pyplot as plt
 import numpy as np
+import copy as cp
 
 # F4 calculation between two oxygen atoms
 # i&j is the index of the oxygen atoms of the water molecule which in the cutoff range(0.35nm)
@@ -53,6 +54,8 @@ np.savetxt(file_name + "_F4.txt", ["Time(ps)    F4_value"], fmt='%s')
 atom_names = u.atoms.names
 residue_names = u.atoms.resnames
 H2O_cluster = []
+skip = 5
+nf = u.trajectory.n_frames
 
 # Record the molecular index 
 for i in range(0, atom_number):
@@ -61,7 +64,11 @@ for i in range(0, atom_number):
         H2O_cluster.append([i,i+1,i+2])
 
 # Iterate through frames
-for ts in u.trajectory:    
+for ts in u.trajectory:
+    # Skip frames
+    f = cp.copy(ts.frame)
+    if f%skip != 0:
+        continue
     # Initialize the parameters
     coordinates = u.atoms.positions
     F4_cluster = []
